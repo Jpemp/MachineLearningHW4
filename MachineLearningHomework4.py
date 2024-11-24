@@ -49,7 +49,14 @@ def softmax(X):
     return soft
 
 def kfold_split(X, k):
-    X_5_split = np.array_split(X,k)
+    split_size = len(X)//k
+    X_5_split = []
+    section = []
+    for i in range(k):
+        start = i * split_size
+        end = split_size + (i * split_size)
+        section = X[start:end]
+        X_5_split.append(section)
     return X_5_split
 
 def accuracy(Y_true, Y_pred):
@@ -62,13 +69,34 @@ def accuracy(Y_true, Y_pred):
     acc = accurate_pred/total
     return acc
 
-def confusion_matrix():
-    
+def confusion_matrix(Y, Y_pred):
+    #for i
 
-    return c_m
 
-ks = kfold_split(X,5) 
+    return c_m 
+
+ks = kfold_split(X_z, 5)
+print(ks)
 
 #Problem 3
+
+#To split train and test data
+def batch(ks, number):
+    train = []
+    test = []
+    for i in range(len(ks)):
+        if i == number:
+            test = ks[i]
+        else:
+            train.append(ks[i])
+    train = pd.concat(train)
+    return train, test
+
+k1_train, k1_test = batch(ks, 0)
+k2_train, k2_test = batch(ks, 1)
+k3_train, k3_test = batch(ks, 2)
+k4_train, k4_test = batch(ks, 3)
+k5_train, k5_test = batch ks, 4)
+
 
 #Problem 4
