@@ -50,14 +50,27 @@ def softmax(X):
 
 def kfold_split(X, k):
     split_size = len(X)//k
-    X_5_split = []
-    section = []
+    X_split = []
+    train = []
+    test = []
+    k_folds = []
     for i in range(k):
         start = i * split_size
         end = split_size + (i * split_size)
-        section = X[start:end]
-        X_5_split.append(section)
-    return X_5_split
+        X_split.append(X[start:end])
+    print(X_split)
+
+    for i in range(k):
+        test = X_split[i]
+        for j in range(k):
+            if j != i:
+                train.append(X_split[j])
+        
+        train_pd = pd.concat(train)
+        k_folds.append([train_pd,test])
+        train_pd = train_pd.iloc[0:0]
+        train.clear()
+    return k_folds
 
 def accuracy(Y_true, Y_pred):
     accurate_pred = 0
@@ -75,28 +88,20 @@ def confusion_matrix(Y, Y_pred):
 
     return c_m 
 
-ks = kfold_split(X_z, 5)
-print(ks)
+
 
 #Problem 3
 
-#To split train and test data
-def batch(ks, number):
-    train = []
-    test = []
-    for i in range(len(ks)):
-        if i == number:
-            test = ks[i]
-        else:
-            train.append(ks[i])
-    train = pd.concat(train)
-    return train, test
+#10 K folds
+ks = kfold_split(X_z, 10) #This produces a list of 10 K folds. Each K fold is a tuple, the first item is the train data and the second item is the test data. 
+                          #To access the test data of the first k fold, for example, use ks[0][1]. This looks at the second item of the first list. First index goes through the k-folds, second index is the tuple.
 
-k1_train, k1_test = batch(ks, 0)
-k2_train, k2_test = batch(ks, 1)
-k3_train, k3_test = batch(ks, 2)
-k4_train, k4_test = batch(ks, 3)
-k5_train, k5_test = batch ks, 4)
+def GDS():
+    return 0
+
+SGD_Step_Size = 0.1
+Epochs = 500
+
 
 
 #Problem 4
