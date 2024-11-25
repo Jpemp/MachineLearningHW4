@@ -3,6 +3,7 @@ import pandas as pd
 import math
 import matplotlib.pyplot as plt
 import numpy as np
+import time
 
 #Problem 1
 #Dataset fetching
@@ -58,7 +59,6 @@ def kfold_split(X, k):
         start = i * split_size
         end = split_size + (i * split_size)
         X_split.append(X[start:end])
-    print(X_split)
 
     for i in range(k):
         test = X_split[i]
@@ -91,16 +91,51 @@ def confusion_matrix(Y, Y_pred):
 
 
 #Problem 3
+def GDS(X_k, Y, learning_rate, epochs, batch_size):
+    X_train = X_k[0] #Loads train data
+    X_test = X_k[1] #Loads test data
+    
+    
+
+    weights = np.zeros(X_train.shape)
+ 
+    #Data shuffle
+    for i in range(epochs):
+        X_shuffle = np.random.permutation(X_train)
+        print(type(X_shuffle))
+       #Y_shuffle = Y[shuffled]
+
+    #mini batch creation
+        for j in range(0, len(X_shuffle), batch_size):
+            X_tb = X_shuffle[j:j + batch_size]
+            #Y_tb = Y_shuffle[j:j + batch_size]
+
+            print(type(X_tb))
+            print(type(weights))
+            #Prediction computation
+            y_pred = np.dot(X_tb, weights.T)
+            print(y_pred)
+            print(y_pred.shape)
+
+
+            #Gradient computation
+            gradient = np.dot(X_tb.T, (y_pred-Y))
+
+            #Weight updates
+            weights -= learning_rate*gradient
+
+        print (time.time())
+    return weights
 
 #10 K folds
-ks = kfold_split(X_z, 10) #This produces a list of 10 K folds. Each K fold is a tuple, the first item is the train data and the second item is the test data. 
-                          #To access the test data of the first k fold, for example, use ks[0][1]. This looks at the second item of the first list. First index goes through the k-folds, second index is the tuple.
+X_k = kfold_split(X_z, 10) #This produces a list of 10 K folds. Each K fold is a tuple, the first item is the train data and the second item is the test data. 
+                           #To access the test data of the first k fold, for example, use ks[0][1]. This looks at the second item of the first list. First index goes through the k-folds, second index is the tuple.
 
-def GDS():
-    return 0
+#Get weights for each K fold
+for i in range(len(X_k)):
+    W = GDS(X_k[i], Y, 0.1, 500, 36)
 
-SGD_Step_Size = 0.1
-Epochs = 500
+
 
 
 
