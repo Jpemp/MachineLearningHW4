@@ -131,11 +131,11 @@ def GDS(X_train, Y_train, learning_rate, epochs, batch_size):
 #10 K folds
 X_k = kfold_split(X_z, 10) #This produces a list of 10 K folds. Each K fold is a tuple, the first item is the train data and the second item is the test data. 
 Y_k = kfold_split(Y, 10)   #To access the test data of the first k fold, for example, use ks[0][1]. This looks at the second item of the first list. First index goes through the k-folds, second index is the tuple.
-
+print(Y_k)
 #Get weights for each K fold
 y_pred = []
 for i in range(len(X_k)):
-    W = GDS(X_k[i][0], Y[i], 0.1, 500, 36)
+    W = GDS(X_k[i][0], Y_k[i][0], 0.1, 500, 36)
 
     y_pred = np.dot(X_k[i][1], W)
 
