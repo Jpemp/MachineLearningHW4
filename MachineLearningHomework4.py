@@ -91,35 +91,36 @@ def confusion_matrix(Y, Y_pred):
 
 
 #Problem 3
-def GDS(X_k, Y, learning_rate, epochs, batch_size):
-    X_train = X_k[0] #Loads train data
-    X_test = X_k[1] #Loads test data
-    
-    
-
-    weights = np.zeros(X_train.shape)
+def GDS(X_train, Y_train, learning_rate, epochs, batch_size):
+    weights = np.zeros((X_train.shape[1], 1))
  
     #Data shuffle
     for i in range(epochs):
-        X_shuffle = np.random.permutation(X_train)
-        print(type(X_shuffle))
-       #Y_shuffle = Y[shuffled]
+        #mini batch creation
+        mini_batches = []
+        train_data  = np.hstack((X_train, Y_train))
+        shuffle = np.random.permutation(train_data)
+        n_batch = shuffle.shape[0] // batch_size
+        j=0
+        for j in range(n_batch + 1):
+            batch = train_data[j*batch_size:(j+1)*batch_size, :]
+            X = batch[:,:-1]
+            Y = batch[:,-1].reshape((-1,1))
+            mini_batches.append((X, Y))
+        if train_data.shape[0] % batch_size != 0:
+            batch = train_data[j*batch_size:train_data.shape[0]]
+            X = batch[:,:-1]
+            Y = batch[:,-1].reshape((-1,1))
+            mini_batches.append((X, Y))
 
-    #mini batch creation
-        for j in range(0, len(X_shuffle), batch_size):
-            X_tb = X_shuffle[j:j + batch_size]
-            #Y_tb = Y_shuffle[j:j + batch_size]
-
-            print(type(X_tb))
-            print(type(weights))
+        for k in mini_batches:
+            X_b,Y_b = k
             #Prediction computation
-            y_pred = np.dot(X_tb, weights.T)
-            print(y_pred)
-            print(y_pred.shape)
+            y_pred = np.dot(X_b, weights)
 
 
             #Gradient computation
-            gradient = np.dot(X_tb.T, (y_pred-Y))
+            gradient = np.dot(X_b.T, (y_pred-Y_b))
 
             #Weight updates
             weights -= learning_rate*gradient
@@ -129,14 +130,13 @@ def GDS(X_k, Y, learning_rate, epochs, batch_size):
 
 #10 K folds
 X_k = kfold_split(X_z, 10) #This produces a list of 10 K folds. Each K fold is a tuple, the first item is the train data and the second item is the test data. 
-                           #To access the test data of the first k fold, for example, use ks[0][1]. This looks at the second item of the first list. First index goes through the k-folds, second index is the tuple.
+Y_k = kfold_split(Y, 10)   #To access the test data of the first k fold, for example, use ks[0][1]. This looks at the second item of the first list. First index goes through the k-folds, second index is the tuple.
 
 #Get weights for each K fold
+y_pred = []
 for i in range(len(X_k)):
-    W = GDS(X_k[i], Y, 0.1, 500, 36)
+    W = GDS(X_k[i][0], Y[i], 0.1, 500, 36)
 
-
-
-
+    y_pred = np.dot(X_k[i][1], W)
 
 #Problem 4
